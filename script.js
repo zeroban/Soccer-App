@@ -1,17 +1,17 @@
 /*************************
  * Defaults & Persistence
  *************************/
-const DEFAULT_FORMATION   = "433";
+const DEFAULT_FORMATION = "433";
 const DEFAULT_ORIENTATION = "right"; // "up" | "right" | "down" | "left"
 
 const LS_KEYS = {
-  roster:      "soccer.roster",
-  attendance:  "soccer.attendance",
+  roster: "soccer.roster",
+  attendance: "soccer.attendance",
   assignments: "soccer.assignments",
-  formation:   "soccer.formation",
+  formation: "soccer.formation",
   orientation: "soccer.orientation",
-  minutes:     "soccer.minutes",  // { [pid]: { totalMs, activeStartMs|null } }
-  clock:       "soccer.clock"     // { running, startedAt, elapsedMs }
+  minutes: "soccer.minutes",  // { [pid]: { totalMs, activeStartMs|null } }
+  clock: "soccer.clock"     // { running, startedAt, elapsedMs }
 };
 
 const ls = {
@@ -28,29 +28,29 @@ const ls = {
  * We'll rotate them at render-time based on current orientation.
  *************************/
 const FORMATIONS = {
-  "433": ["GK","RB","RCB","LCB","LB","RM","CM","LM","RW","ST","LW"],
-  "442": ["GK","RB","RCB","LCB","LB","RM","RCM","LCM","LM","RST","LST"],
-  "352": ["GK","RCB","CB","LCB","RWB","RDM","CAM","LDM","LWB","RST","LST"]
+  "433": ["GK", "RB", "RCB", "LCB", "LB", "RM", "CM", "LM", "RW", "ST", "LW"],
+  "442": ["GK", "RB", "RCB", "LCB", "LB", "RM", "RCM", "LCM", "LM", "RST", "LST"],
+  "352": ["GK", "RCB", "CB", "LCB", "RWB", "RDM", "CAM", "LDM", "LWB", "RST", "LST"]
 };
 
 const FIELD_COORDS_UP = {
   "433": {
-    GK:[50,92],
-    RB:[78,78], RCB:[62,74], LCB:[38,74], LB:[22,78],
-    RM:[72,56], CM:[50,50], LM:[28,56],
-    RW:[70,30], ST:[50,24], LW:[30,30]
+    GK: [50, 92],
+    RB: [78, 78], RCB: [62, 74], LCB: [38, 74], LB: [22, 78],
+    RM: [72, 56], CM: [50, 50], LM: [28, 56],
+    RW: [70, 30], ST: [50, 24], LW: [30, 30]
   },
   "442": {
-    GK:[50,92],
-    RB:[78,78], RCB:[62,74], LCB:[38,74], LB:[22,78],
-    RM:[72,56], RCM:[58,50], LCM:[42,50], LM:[28,56],
-    RST:[58,28], LST:[42,28]
+    GK: [50, 92],
+    RB: [78, 78], RCB: [62, 74], LCB: [38, 74], LB: [22, 78],
+    RM: [72, 56], RCM: [58, 50], LCM: [42, 50], LM: [28, 56],
+    RST: [58, 28], LST: [42, 28]
   },
   "352": {
-    GK:[50,92],
-    RCB:[62,80], CB:[50,82], LCB:[38,80],
-    RWB:[76,60], RDM:[58,52], CAM:[50,40], LDM:[42,52], LWB:[24,60],
-    RST:[56,28], LST:[44,28]
+    GK: [50, 92],
+    RCB: [62, 80], CB: [50, 82], LCB: [38, 80],
+    RWB: [76, 60], RDM: [58, 52], CAM: [50, 40], LDM: [42, 52], LWB: [24, 60],
+    RST: [56, 28], LST: [44, 28]
   }
 };
 
@@ -58,31 +58,31 @@ const FIELD_COORDS_UP = {
  * Seed roster
  *************************/
 const ROSTER_SEED = [
-  { id: "p1", name: "Alex",  number:  2 },
-  { id: "p2", name: "Brian", number:  3 },
-  { id: "p3", name: "Chris", number:  4 },
-  { id: "p4", name: "David", number:  7 },
-  { id: "p5", name: "Ethan", number:  9 },
-  { id: "p6", name: "Frank", number: 10 },
-  { id: "p7", name: "Gabe",  number: 11 },
-  { id: "p8", name: "Henry", number: 12 }
+  { id: "p1", name: "Alex", },
+  { id: "p2", name: "Brian", },
+  { id: "p3", name: "Chris", },
+  { id: "p4", name: "David", },
+  { id: "p5", name: "Ethan", },
+  { id: "p6", name: "Frank", },
+  { id: "p7", name: "Gabe", },
+  { id: "p8", name: "Henry", }
 ];
 
 /*************************
  * App State & DOM refs
  *************************/
-let roster           = ls.load(LS_KEYS.roster,      ROSTER_SEED);
-let attendance       = ls.load(LS_KEYS.attendance,  {});            // id -> boolean
-let assignments      = ls.load(LS_KEYS.assignments, {});            // pos -> playerId
-let currentFormation = ls.load(LS_KEYS.formation,   DEFAULT_FORMATION);
-let orientation      = ls.load(LS_KEYS.orientation, DEFAULT_ORIENTATION);
+let roster = ls.load(LS_KEYS.roster, ROSTER_SEED);
+let attendance = ls.load(LS_KEYS.attendance, {});            // id -> boolean
+let assignments = ls.load(LS_KEYS.assignments, {});            // pos -> playerId
+let currentFormation = ls.load(LS_KEYS.formation, DEFAULT_FORMATION);
+let orientation = ls.load(LS_KEYS.orientation, DEFAULT_ORIENTATION);
 
 // Per-player minutes
 let minutes = ls.load(LS_KEYS.minutes, {}); // { [pid]: { totalMs, activeStartMs } }
 
 // Game clock state
 let clock = ls.load(LS_KEYS.clock, {
-  running:   false,
+  running: false,
   startedAt: null, // epoch ms when started
   elapsedMs: 0     // accumulated ms when paused
 });
@@ -122,16 +122,16 @@ function rotateFromUp([x, y]) {
   // UP -> LEFT:  (100 - y, x)
   switch (orientation) {
     case "right": return [y, 100 - x];
-    case "down":  return [100 - x, 100 - y];
-    case "left":  return [100 - y, x];
+    case "down": return [100 - x, 100 - y];
+    case "left": return [100 - y, x];
     case "up":
-    default:      return [x, y];
+    default: return [x, y];
   }
 }
 
 function coordsFor(posKey) {
   const table = FIELD_COORDS_UP[currentFormation] ?? FIELD_COORDS_UP[DEFAULT_FORMATION];
-  const base  = table[posKey] || [50,50];
+  const base = table[posKey] || [50, 50];
   return rotateFromUp(base);
 }
 
@@ -146,13 +146,13 @@ function currentPositionOf(playerId) {
  * Persistence
  *************************/
 function persist() {
-  ls.save(LS_KEYS.roster,      roster);
-  ls.save(LS_KEYS.attendance,  attendance);
+  ls.save(LS_KEYS.roster, roster);
+  ls.save(LS_KEYS.attendance, attendance);
   ls.save(LS_KEYS.assignments, assignments);
-  ls.save(LS_KEYS.formation,   currentFormation);
+  ls.save(LS_KEYS.formation, currentFormation);
   ls.save(LS_KEYS.orientation, orientation);
-  ls.save(LS_KEYS.minutes,     minutes);
-  ls.save(LS_KEYS.clock,       clock);
+  ls.save(LS_KEYS.minutes, minutes);
+  ls.save(LS_KEYS.clock, clock);
 }
 
 /*************************
@@ -250,7 +250,7 @@ function pauseClock() {
 
   // Freeze the game clock
   clock.elapsedMs = computeElapsedMs();
-  clock.running   = false;
+  clock.running = false;
   clock.startedAt = null;
 
   persist();
@@ -263,7 +263,7 @@ function resetClock() {
   // Reset clock + stop any active sessions (totals remain)
   if (!confirm("Reset game clock and stop active sessions? (Totals remain)")) return;
 
-  clock.running   = false;
+  clock.running = false;
   clock.startedAt = null;
   clock.elapsedMs = 0;
   stopTicking();
@@ -308,7 +308,7 @@ function renderAllPlayers() {
     });
 
     const label = document.createElement("label");
-    label.textContent = `${p.number ?? "•"}  ${p.name}`;
+    label.textContent = `${p.name}`;
 
     div.appendChild(cb);
     div.appendChild(label);
@@ -323,7 +323,7 @@ function renderPresentPlayers() {
     const chip = document.createElement("button");
     chip.className = "present-chip";
     chip.setAttribute("aria-label", `Assign ${p.name} to a position`);
-    chip.textContent = `${p.number ?? ""} ${p.name}`.trim();
+    chip.textContent = `${p.name}`.trim();
     chip.addEventListener("click", () => openAssignModal({ playerId: p.id }));
     presentPlayersDiv.appendChild(chip);
   });
@@ -358,7 +358,7 @@ function renderLineup() {
       const p = roster.find(r => r.id === pid);
       if (p) {
         const total = effectivePlayerMs(pid);
-        name.textContent = `${(p.number ?? "").toString().trim()} ${p.name} — ${fmtMMSS(total)}`.trim();
+        name.textContent = `${p.name} — ${fmtMMSS(total)}`;
       } else {
         name.textContent = "—";
         name.classList.add("muted");
@@ -398,14 +398,14 @@ function renderField() {
   const POSITIONS = positionsForCurrentFormation();
 
   POSITIONS.forEach(pos => {
-    const [x,y] = coordsFor(pos);
+    const [x, y] = coordsFor(pos);
     const pid = assignments[pos];
     const player = pid ? roster.find(r => r.id === pid) : null;
 
     const spot = document.createElement("div");
     spot.className = "spot" + (player ? "" : " empty");
     spot.style.left = x + "%";
-    spot.style.top  = y + "%";
+    spot.style.top = y + "%";
 
     const posEl = document.createElement("div");
     posEl.className = "pos";
@@ -415,7 +415,7 @@ function renderField() {
     nameEl.className = "name";
     if (player) {
       const total = effectivePlayerMs(player.id);
-      nameEl.textContent = `${(player.number ?? "").toString().trim()} ${player.name} — ${fmtMMSS(total)}`.trim();
+      nameEl.textContent = `${player.name} — ${fmtMMSS(total)}`;
     } else {
       nameEl.textContent = "—";
     }
@@ -484,7 +484,7 @@ function openAssignModal({ playerId = null, positionKey = null } = {}) {
   presentPlayers.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.id;
-    opt.textContent = `${p.number ?? ""} ${p.name}`.trim();
+    opt.textContent = `${p.name}`.trim();
     playerSelect.appendChild(opt);
   });
   if (playerId) playerSelect.value = playerId;
@@ -591,24 +591,24 @@ function closeAssignModal() {
  *************************/
 document.addEventListener("DOMContentLoaded", () => {
   // Cache DOM
-  allPlayersDiv      = document.getElementById("all-players");
-  presentPlayersDiv  = document.getElementById("present-players");
-  lineupDiv          = document.getElementById("lineup");
-  formationSelect    = document.getElementById("formation-select");
-  orientationSelect  = document.getElementById("orientation-select");
+  allPlayersDiv = document.getElementById("all-players");
+  presentPlayersDiv = document.getElementById("present-players");
+  lineupDiv = document.getElementById("lineup");
+  formationSelect = document.getElementById("formation-select");
+  orientationSelect = document.getElementById("orientation-select");
 
-  clockDisplay   = document.getElementById("clock-display");
-  clockStartBtn  = document.getElementById("clock-start");
-  clockPauseBtn  = document.getElementById("clock-pause");
-  clockResetBtn  = document.getElementById("clock-reset");
+  clockDisplay = document.getElementById("clock-display");
+  clockStartBtn = document.getElementById("clock-start");
+  clockPauseBtn = document.getElementById("clock-pause");
+  clockResetBtn = document.getElementById("clock-reset");
 
-  backdrop     = document.getElementById("backdrop");
-  assignTitle  = document.getElementById("assign-title");
+  backdrop = document.getElementById("backdrop");
+  assignTitle = document.getElementById("assign-title");
   playerSelect = document.getElementById("player-select");
-  posSelect    = document.getElementById("pos-select");
-  saveBtn      = document.getElementById("save-btn");
-  cancelBtn    = document.getElementById("cancel-btn");
-  unassignBtn  = document.getElementById("unassign-btn");
+  posSelect = document.getElementById("pos-select");
+  saveBtn = document.getElementById("save-btn");
+  cancelBtn = document.getElementById("cancel-btn");
+  unassignBtn = document.getElementById("unassign-btn");
 
   // Initialize selectors from saved state
   if (formationSelect) {

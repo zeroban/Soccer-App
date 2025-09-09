@@ -110,8 +110,8 @@ h2 { margin-top: 28px; margin-bottom: 8px; }
 .spot {
   position: absolute;
   transform: translate(-50%, -50%);
-  min-width: 44px;
-  max-width: 160px;
+  min-width: 34px;
+  max-width: 150px;
   text-align: center;
   padding: 6px 8px;
   border-radius: 10px;
