@@ -1,102 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Soccer App — Check-in & Assign</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>Soccer App — Check-in & Assign</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
-
 <body>
-    <h1>Soccer Game Manager</h1>
-    <p class="muted">Check players in. Click a present player or a field spot to assign. Switch formation and field side
-        anytime.</p>
-    <!-- Game Clock Controls -->
-    <div id="clock-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-        <strong>Game Clock:</strong>
-        <span id="clock-display" class="mono" style="min-width:82px;display:inline-block;">00:00</span>
-        <button id="clock-start" class="btn primary">Start</button>
-        <button id="clock-pause" class="btn">Pause</button>
-        <button id="clock-reset" class="btn warn">Reset</button>
-        <span class="muted small">Players’ minutes update while clock runs.</span>
+  <h1>Soccer Game Manager</h1>
+  <p class="muted">Check players in. Click a present player or a field spot to assign. Switch formation and field side anytime.</p>
+
+  <div class="row">
+    <!-- Left: All Players / Present Players -->
+    <div class="col">
+      <div class="card">
+        <!-- Collapsible All Players -->
+        <h2 class="collapser" id="all-players-toggle" role="button" tabindex="0"
+            aria-expanded="true" aria-controls="all-players-wrap">
+          All Players <span class="chev" aria-hidden="true">▾</span>
+        </h2>
+
+        <div id="all-players-wrap" class="collapsible open">
+          <div id="all-players"></div>
+        </div>
+
+        <h2>Present Players</h2>
+        <div id="present-players" aria-live="polite"></div>
+      </div>
     </div>
 
-    <div class="row">
-        <!-- Left: All Players / Present Players -->
-        <div class="col">
-            <div class="card">
-                <h2>All Players</h2>
-                <div id="all-players"></div>
-
-                <h2>Present Players</h2>
-                <div id="present-players" aria-live="polite"></div>
-            </div>
-        </div>
-
-        <!-- Right: Lineup + Controls -->
-        <div class="col">
-            <div class="card">
-                <h2 class="lineup-header">
-                    <span>Lineup</span>
-                    <div class="controls">
-                        <label class="muted header-select">
-                            Formation:
-                            <select id="formation-select">
-                                <option value="433">4-3-3</option>
-                                <option value="442">4-4-2</option>
-                                <option value="352">3-5-2</option>
-                            </select>
-                        </label>
-                        <label class="muted header-select">
-                            Orientation:
-                            <select id="orientation-select">
-                                <option value="right">Right</option>
-                                <option value="left">Left</option>
-                            </select>
-                        </label>
-                    </div>
-                </h2>
-                <div id="lineup"></div>
-            </div>
-        </div>
-
-        <!-- Field Preview (uses your image) -->
-        <div class="col" style="flex-basis:100%;">
-            <div class="card">
-                <h2>Field Preview</h2>
-                <div id="field" class="field"></div>
-            </div>
-        </div>
+    <!-- Right: Lineup + Controls -->
+    <div class="col">
+      <div class="card">
+        <h2 class="lineup-header">
+          <span>Lineup</span>
+          <div class="controls">
+            <label class="muted header-select">
+              Formation:
+              <select id="formation-select">
+                <option value="433">4-3-3</option>
+                <option value="442">4-4-2</option>
+                <option value="352">3-5-2</option>
+              </select>
+            </label>
+            <label class="muted header-select">
+              Orientation:
+              <select id="orientation-select">
+                <option value="right">Right</option>
+                <option value="left">Left</option>
+              </select>
+            </label>
+          </div>
+        </h2>
+        <div id="lineup"></div>
+      </div>
     </div>
 
-    <!-- Modal: Assign -->
-    <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="assign-title">
-        <div class="modal">
-            <h3 id="assign-title">Assign</h3>
+    <!-- Field Preview (uses your image) -->
+    <div class="col" style="flex-basis:100%;">
+      <div class="card">
+        <h2>Field Preview</h2>
 
-            <div class="form-row">
-                <label for="player-select">Player:</label>
-                <select id="player-select"></select>
-            </div>
-
-            <div class="form-row">
-                <label for="pos-select">Position:</label>
-                <select id="pos-select"></select>
-            </div>
-
-            <p class="muted small">Only present players are listed. Changing formation keeps matching labels (e.g., GK).
-            </p>
-
-            <div class="actions">
-                <button class="btn warn" id="unassign-btn"
-                    title="Remove this player's current assignment">Unassign</button>
-                <button class="btn" id="cancel-btn">Cancel</button>
-                <button class="btn primary" id="save-btn">Save</button>
-            </div>
+        <!-- Game Clock Controls -->
+        <div id="clock-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+          <strong>Game Clock:</strong>
+          <span id="clock-display" class="mono" style="min-width:82px;display:inline-block;">00:00</span>
+          <button id="clock-start" class="btn primary">Start</button>
+          <button id="clock-pause" class="btn">Pause</button>
+          <button id="clock-reset" class="btn warn">Reset</button>
+          <span class="muted small">Players’ minutes update while clock runs.</span>
         </div>
+
+        <div id="field" class="field"></div>
+      </div>
     </div>
+  </div>
+
+  <!-- Modal: Assign -->
+  <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="assign-title">
+    <div class="modal">
+      <h3 id="assign-title">Assign</h3>
+
+      <div class="form-row">
+        <label for="player-select">Player:</label>
+        <select id="player-select"></select>
+      </div>
+
+      <div class="form-row">
+        <label for="pos-select">Position:</label>
+        <select id="pos-select"></select>
+      </div>
+
+      <p class="muted small">Only present players are listed. Changing formation keeps matching labels (e.g., GK).</p>
+
+      <div class="actions">
+        <button class="btn warn" id="unassign-btn" title="Remove this player's current assignment">Unassign</button>
+        <button class="btn" id="cancel-btn">Cancel</button>
+        <button class="btn primary" id="save-btn">Save</button>
+      </div>
+    </div>
+  </div>
 </body>
-
 </html>

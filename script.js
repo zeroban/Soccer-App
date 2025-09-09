@@ -1,17 +1,18 @@
 /*************************
  * Defaults & Persistence
  *************************/
-const DEFAULT_FORMATION = "433";
+const DEFAULT_FORMATION   = "433";
 const DEFAULT_ORIENTATION = "right"; // "up" | "right" | "down" | "left"
 
 const LS_KEYS = {
-  roster: "soccer.roster",
-  attendance: "soccer.attendance",
+  roster:      "soccer.roster",
+  attendance:  "soccer.attendance",
   assignments: "soccer.assignments",
-  formation: "soccer.formation",
+  formation:   "soccer.formation",
   orientation: "soccer.orientation",
-  minutes: "soccer.minutes",  // { [pid]: { totalMs, activeStartMs|null } }
-  clock: "soccer.clock"     // { running, startedAt, elapsedMs }
+  minutes:     "soccer.minutes",      // { [pid]: { totalMs, activeStartMs|null } }
+  clock:       "soccer.clock",        // { running, startedAt, elapsedMs }
+  allPlayersCollapsed: "soccer.ui.allPlayersCollapsed"
 };
 
 const ls = {
@@ -24,65 +25,75 @@ const ls = {
 
 /*************************
  * Formations & Base Coords (UP)
- * Coordinates assume the team attacks toward the TOP ("up").
- * We'll rotate them at render-time based on current orientation.
  *************************/
 const FORMATIONS = {
-  "433": ["GK", "RB", "RCB", "LCB", "LB", "RM", "CM", "LM", "RW", "ST", "LW"],
-  "442": ["GK", "RB", "RCB", "LCB", "LB", "RM", "RCM", "LCM", "LM", "RST", "LST"],
-  "352": ["GK", "RCB", "CB", "LCB", "RWB", "RDM", "CAM", "LDM", "LWB", "RST", "LST"]
+  "433": ["GK","RB","RCB","LCB","LB","RM","CM","LM","RW","ST","LW"],
+  "442": ["GK","RB","RCB","LCB","LB","RM","RCM","LCM","LM","RST","LST"],
+  "352": ["GK","RCB","CB","LCB","RWB","RDM","CAM","LDM","LWB","RST","LST"]
 };
 
 const FIELD_COORDS_UP = {
   "433": {
-    GK: [50, 92],
-    RB: [78, 78], RCB: [62, 74], LCB: [38, 74], LB: [22, 78],
-    RM: [72, 56], CM: [50, 50], LM: [28, 56],
-    RW: [70, 30], ST: [50, 24], LW: [30, 30]
+    GK:[50,92],
+    RB:[78,78], RCB:[62,74], LCB:[38,74], LB:[22,78],
+    RM:[72,56], CM:[50,50], LM:[28,56],
+    RW:[70,30], ST:[50,24], LW:[30,30]
   },
   "442": {
-    GK: [50, 92],
-    RB: [78, 78], RCB: [62, 74], LCB: [38, 74], LB: [22, 78],
-    RM: [72, 56], RCM: [58, 50], LCM: [42, 50], LM: [28, 56],
-    RST: [58, 28], LST: [42, 28]
+    GK:[50,92],
+    RB:[78,78], RCB:[62,74], LCB:[38,74], LB:[22,78],
+    RM:[72,56], RCM:[58,50], LCM:[42,50], LM:[28,56],
+    RST:[58,28], LST:[42,28]
   },
   "352": {
-    GK: [50, 92],
-    RCB: [62, 80], CB: [50, 82], LCB: [38, 80],
-    RWB: [76, 60], RDM: [58, 52], CAM: [50, 40], LDM: [42, 52], LWB: [24, 60],
-    RST: [56, 28], LST: [44, 28]
+    GK:[50,92],
+    RCB:[62,80], CB:[50,82], LCB:[38,80],
+    RWB:[76,60], RDM:[58,52], CAM:[50,40], LDM:[42,52], LWB:[24,60],
+    RST:[56,28], LST:[44,28]
   }
 };
 
 /*************************
- * Seed roster
+ * Roster (names only)
  *************************/
 const ROSTER_SEED = [
-  { id: "p1", name: "Alex", },
-  { id: "p2", name: "Brian", },
-  { id: "p3", name: "Chris", },
-  { id: "p4", name: "David", },
-  { id: "p5", name: "Ethan", },
-  { id: "p6", name: "Frank", },
-  { id: "p7", name: "Gabe", },
-  { id: "p8", name: "Henry", }
+  { id: "p1", name: "Itzel" },
+  { id: "p2", name: "Noel" },
+  { id: "p3", name: "Aylin" },
+  { id: "p4", name: "Nico" },
+  { id: "p5", name: "Maya" },
+  { id: "p6", name: "Virani" },
+  { id: "p7", name: "Ariel" },
+  { id: "p8", name: "Hayden" },
+  { id: "p9", name: "Chanel" },
+  { id: "p10", name: "Jonathan" },
+  { id: "p11", name: "luke" },
+  { id: "p12", name: "Yahir" },
+  { id: "p13", name: "Kevin" },
+  { id: "p14", name: "Leo" },
+  { id: "p15", name: "Sebas S" },
+  { id: "p16", name: "Levi" },
+  { id: "p17", name: "Zayelan" },
+  { id: "p18", name: "Tyson" },
+  { id: "p19", name: "Wyatt" },
+  { id: "p20", name: "Sebas V" }
 ];
 
 /*************************
  * App State & DOM refs
  *************************/
-let roster = ls.load(LS_KEYS.roster, ROSTER_SEED);
-let attendance = ls.load(LS_KEYS.attendance, {});            // id -> boolean
-let assignments = ls.load(LS_KEYS.assignments, {});            // pos -> playerId
-let currentFormation = ls.load(LS_KEYS.formation, DEFAULT_FORMATION);
-let orientation = ls.load(LS_KEYS.orientation, DEFAULT_ORIENTATION);
+let roster           = ls.load(LS_KEYS.roster,      ROSTER_SEED);
+let attendance       = ls.load(LS_KEYS.attendance,  {});            // id -> boolean
+let assignments      = ls.load(LS_KEYS.assignments, {});            // pos -> playerId
+let currentFormation = ls.load(LS_KEYS.formation,   DEFAULT_FORMATION);
+let orientation      = ls.load(LS_KEYS.orientation, DEFAULT_ORIENTATION);
 
 // Per-player minutes
 let minutes = ls.load(LS_KEYS.minutes, {}); // { [pid]: { totalMs, activeStartMs } }
 
 // Game clock state
 let clock = ls.load(LS_KEYS.clock, {
-  running: false,
+  running:   false,
   startedAt: null, // epoch ms when started
   elapsedMs: 0     // accumulated ms when paused
 });
@@ -90,6 +101,7 @@ let clockInterval = null;
 
 // DOM
 let allPlayersDiv, presentPlayersDiv, lineupDiv, formationSelect, orientationSelect;
+let allPlayersToggle, allPlayersWrap;
 let clockDisplay, clockStartBtn, clockPauseBtn, clockResetBtn;
 let backdrop, assignTitle, playerSelect, posSelect, saveBtn, cancelBtn, unassignBtn;
 
@@ -97,7 +109,6 @@ let backdrop, assignTitle, playerSelect, posSelect, saveBtn, cancelBtn, unassign
  * Helpers (time/format)
  *************************/
 function nowMs() { return Date.now(); }
-
 function fmtMMSS(ms) {
   const total = Math.floor(ms / 1000);
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
@@ -117,24 +128,19 @@ function positionsForCurrentFormation() {
 
 // Rotate a point (x,y in 0..100) from UP into the chosen orientation.
 function rotateFromUp([x, y]) {
-  // UP -> RIGHT: (y, 100 - x)
-  // UP -> DOWN:  (100 - x, 100 - y)
-  // UP -> LEFT:  (100 - y, x)
   switch (orientation) {
     case "right": return [y, 100 - x];
-    case "down": return [100 - x, 100 - y];
-    case "left": return [100 - y, x];
+    case "down":  return [100 - x, 100 - y];
+    case "left":  return [100 - y, x];
     case "up":
-    default: return [x, y];
+    default:      return [x, y];
   }
 }
-
 function coordsFor(posKey) {
   const table = FIELD_COORDS_UP[currentFormation] ?? FIELD_COORDS_UP[DEFAULT_FORMATION];
-  const base = table[posKey] || [50, 50];
+  const base  = table[posKey] || [50,50];
   return rotateFromUp(base);
 }
-
 function currentPositionOf(playerId) {
   for (const pos of Object.keys(assignments)) {
     if (assignments[pos] === playerId) return pos;
@@ -146,13 +152,13 @@ function currentPositionOf(playerId) {
  * Persistence
  *************************/
 function persist() {
-  ls.save(LS_KEYS.roster, roster);
-  ls.save(LS_KEYS.attendance, attendance);
+  ls.save(LS_KEYS.roster,      roster);
+  ls.save(LS_KEYS.attendance,  attendance);
   ls.save(LS_KEYS.assignments, assignments);
-  ls.save(LS_KEYS.formation, currentFormation);
+  ls.save(LS_KEYS.formation,   currentFormation);
   ls.save(LS_KEYS.orientation, orientation);
-  ls.save(LS_KEYS.minutes, minutes);
-  ls.save(LS_KEYS.clock, clock);
+  ls.save(LS_KEYS.minutes,     minutes);
+  ls.save(LS_KEYS.clock,       clock);
 }
 
 /*************************
@@ -162,7 +168,6 @@ function ensureMinutes(pid) {
   if (!minutes[pid]) minutes[pid] = { totalMs: 0, activeStartMs: null };
   return minutes[pid];
 }
-
 function beginPlayerSessionIfRunning(pid) {
   if (!pid) return;
   const m = ensureMinutes(pid);
@@ -170,7 +175,6 @@ function beginPlayerSessionIfRunning(pid) {
     m.activeStartMs = nowMs();
   }
 }
-
 function endPlayerSessionIfActive(pid) {
   if (!pid) return;
   const m = ensureMinutes(pid);
@@ -179,7 +183,6 @@ function endPlayerSessionIfActive(pid) {
     m.activeStartMs = null;
   }
 }
-
 function effectivePlayerMs(pid) {
   const m = ensureMinutes(pid);
   let extra = 0;
@@ -190,92 +193,57 @@ function effectivePlayerMs(pid) {
 }
 
 /*************************
- * Game Clock logic
+ * Game Clock
  *************************/
 function computeElapsedMs() {
   if (!clock.running || !clock.startedAt) return clock.elapsedMs;
   return clock.elapsedMs + (nowMs() - clock.startedAt);
 }
-
 function updateClockUI() {
-  if (!clockDisplay) return;
-  clockDisplay.textContent = fmtMMSS(computeElapsedMs());
+  if (clockDisplay) clockDisplay.textContent = fmtMMSS(computeElapsedMs());
   if (clockStartBtn && clockPauseBtn) {
     clockStartBtn.disabled = clock.running;
     clockPauseBtn.disabled = !clock.running;
   }
 }
-
 function startTickingIfNeeded() {
   if (clock.running && !clockInterval) {
     clockInterval = setInterval(() => {
       updateClockUI();
-      // keep minutes display fresh
       renderAll();
     }, 1000);
   }
 }
 function stopTicking() {
-  if (clockInterval) {
-    clearInterval(clockInterval);
-    clockInterval = null;
-  }
+  if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
 }
-
 function startClock() {
   if (clock.running) return;
   clock.running = true;
   clock.startedAt = nowMs();
-
-  // Start live session for all currently assigned players
   for (const pos of Object.keys(assignments)) {
     const pid = assignments[pos];
     if (pid) beginPlayerSessionIfRunning(pid);
   }
-
-  persist();
-  updateClockUI();
-  startTickingIfNeeded();
+  persist(); updateClockUI(); startTickingIfNeeded();
 }
-
 function pauseClock() {
   if (!clock.running) return;
-
-  // End live session for all currently assigned players
-  const stopAt = nowMs();
   for (const pos of Object.keys(assignments)) {
     const pid = assignments[pos];
     if (pid) endPlayerSessionIfActive(pid);
   }
-
-  // Freeze the game clock
   clock.elapsedMs = computeElapsedMs();
-  clock.running = false;
+  clock.running   = false;
   clock.startedAt = null;
-
-  persist();
-  updateClockUI();
-  stopTicking();
-  renderAll();
+  persist(); updateClockUI(); stopTicking(); renderAll();
 }
-
 function resetClock() {
-  // Reset clock + stop any active sessions (totals remain)
   if (!confirm("Reset game clock and stop active sessions? (Totals remain)")) return;
-
-  clock.running = false;
-  clock.startedAt = null;
-  clock.elapsedMs = 0;
+  clock.running = false; clock.startedAt = null; clock.elapsedMs = 0;
   stopTicking();
-
-  // End any active player sessions without adding extra time
-  for (const pid of Object.keys(minutes)) {
-    minutes[pid].activeStartMs = null;
-  }
-
-  persist();
-  updateClockUI();
-  renderAll();
+  for (const pid of Object.keys(minutes)) minutes[pid].activeStartMs = null;
+  persist(); updateClockUI(); renderAll();
 }
 
 /*************************
@@ -292,9 +260,7 @@ function renderAllPlayers() {
     cb.checked = !!attendance[p.id];
     cb.addEventListener("change", () => {
       attendance[p.id] = cb.checked;
-
       if (!cb.checked) {
-        // If they were assigned anywhere, end their session and remove assignment(s)
         for (const pos of Object.keys(assignments)) {
           if (assignments[pos] === p.id) {
             endPlayerSessionIfActive(p.id);
@@ -302,13 +268,11 @@ function renderAllPlayers() {
           }
         }
       }
-
-      persist();
-      renderAll();
+      persist(); renderAll();
     });
 
     const label = document.createElement("label");
-    label.textContent = `${p.name}`;
+    label.textContent = p.name;
 
     div.appendChild(cb);
     div.appendChild(label);
@@ -323,7 +287,7 @@ function renderPresentPlayers() {
     const chip = document.createElement("button");
     chip.className = "present-chip";
     chip.setAttribute("aria-label", `Assign ${p.name} to a position`);
-    chip.textContent = `${p.name}`.trim();
+    chip.textContent = p.name;
     chip.addEventListener("click", () => openAssignModal({ playerId: p.id }));
     presentPlayersDiv.appendChild(chip);
   });
@@ -376,8 +340,7 @@ function renderLineup() {
       const prevPid = assignments[pos];
       if (prevPid) endPlayerSessionIfActive(prevPid);
       delete assignments[pos];
-      persist();
-      renderAll();
+      persist(); renderAll();
     });
 
     row.appendChild(tag);
@@ -398,14 +361,14 @@ function renderField() {
   const POSITIONS = positionsForCurrentFormation();
 
   POSITIONS.forEach(pos => {
-    const [x, y] = coordsFor(pos);
+    const [x,y] = coordsFor(pos);
     const pid = assignments[pos];
     const player = pid ? roster.find(r => r.id === pid) : null;
 
     const spot = document.createElement("div");
     spot.className = "spot" + (player ? "" : " empty");
     spot.style.left = x + "%";
-    spot.style.top = y + "%";
+    spot.style.top  = y + "%";
 
     const posEl = document.createElement("div");
     posEl.className = "pos";
@@ -454,7 +417,7 @@ function changeFormation(nextKey) {
     }
   }
 
-  // Keep only assignments whose labels still exist in the new formation
+  // Keep only assignments whose labels still exist
   const nextAssignments = {};
   Object.keys(assignments).forEach(label => {
     if (nextPositions.has(label)) nextAssignments[label] = assignments[label];
@@ -462,15 +425,13 @@ function changeFormation(nextKey) {
 
   assignments = nextAssignments;
   currentFormation = nextKey;
-  persist();
-  renderAll();
+  persist(); renderAll();
 }
 
 /*************************
  * Assign Modal logic
  *************************/
 function openAssignModal({ playerId = null, positionKey = null } = {}) {
-  // Only present players can be assigned
   const presentPlayers = roster.filter(p => attendance[p.id]);
   if (presentPlayers.length === 0) {
     alert("No players are checked in.");
@@ -484,7 +445,7 @@ function openAssignModal({ playerId = null, positionKey = null } = {}) {
   presentPlayers.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.id;
-    opt.textContent = `${p.name}`.trim();
+    opt.textContent = p.name;
     playerSelect.appendChild(opt);
   });
   if (playerId) playerSelect.value = playerId;
@@ -503,7 +464,6 @@ function openAssignModal({ playerId = null, positionKey = null } = {}) {
     }
   });
 
-  // Preselect if provided
   if (positionKey) {
     for (const o of posSelect.options) if (o.value === positionKey) posSelect.value = positionKey;
   } else if (playerId) {
@@ -558,9 +518,7 @@ function openAssignModal({ playerId = null, positionKey = null } = {}) {
     // Start this player's session if clock is running
     beginPlayerSessionIfRunning(pid);
 
-    persist();
-    renderAll();
-    closeAssignModal();
+    persist(); renderAll(); closeAssignModal();
   };
 
   // Unassign
@@ -570,8 +528,7 @@ function openAssignModal({ playerId = null, positionKey = null } = {}) {
     if (at) {
       endPlayerSessionIfActive(pid);
       delete assignments[at];
-      persist();
-      renderAll();
+      persist(); renderAll();
     }
     closeAssignModal();
   };
@@ -587,30 +544,43 @@ function closeAssignModal() {
 }
 
 /*************************
+ * Collapsible helpers
+ *************************/
+function setAllPlayersCollapsed(collapsed) {
+  allPlayersWrap.classList.toggle("open", !collapsed);
+  allPlayersWrap.classList.toggle("closed", collapsed);
+  allPlayersToggle.classList.toggle("collapsed", collapsed);
+  allPlayersToggle.setAttribute("aria-expanded", String(!collapsed));
+}
+
+/*************************
  * Bootstrap
  *************************/
 document.addEventListener("DOMContentLoaded", () => {
   // Cache DOM
-  allPlayersDiv = document.getElementById("all-players");
-  presentPlayersDiv = document.getElementById("present-players");
-  lineupDiv = document.getElementById("lineup");
-  formationSelect = document.getElementById("formation-select");
-  orientationSelect = document.getElementById("orientation-select");
+  allPlayersDiv      = document.getElementById("all-players");
+  presentPlayersDiv  = document.getElementById("present-players");
+  lineupDiv          = document.getElementById("lineup");
+  formationSelect    = document.getElementById("formation-select");
+  orientationSelect  = document.getElementById("orientation-select");
 
-  clockDisplay = document.getElementById("clock-display");
-  clockStartBtn = document.getElementById("clock-start");
-  clockPauseBtn = document.getElementById("clock-pause");
-  clockResetBtn = document.getElementById("clock-reset");
+  allPlayersToggle   = document.getElementById("all-players-toggle");
+  allPlayersWrap     = document.getElementById("all-players-wrap");
 
-  backdrop = document.getElementById("backdrop");
-  assignTitle = document.getElementById("assign-title");
+  clockDisplay   = document.getElementById("clock-display");
+  clockStartBtn  = document.getElementById("clock-start");
+  clockPauseBtn  = document.getElementById("clock-pause");
+  clockResetBtn  = document.getElementById("clock-reset");
+
+  backdrop     = document.getElementById("backdrop");
+  assignTitle  = document.getElementById("assign-title");
   playerSelect = document.getElementById("player-select");
-  posSelect = document.getElementById("pos-select");
-  saveBtn = document.getElementById("save-btn");
-  cancelBtn = document.getElementById("cancel-btn");
-  unassignBtn = document.getElementById("unassign-btn");
+  posSelect    = document.getElementById("pos-select");
+  saveBtn      = document.getElementById("save-btn");
+  cancelBtn    = document.getElementById("cancel-btn");
+  unassignBtn  = document.getElementById("unassign-btn");
 
-  // Initialize selectors from saved state
+  // Initialize selectors
   if (formationSelect) {
     formationSelect.value = currentFormation;
     formationSelect.addEventListener("change", (e) => changeFormation(e.target.value));
@@ -623,6 +593,19 @@ document.addEventListener("DOMContentLoaded", () => {
       renderAll();
     });
   }
+
+  // Collapsible: restore state and wire toggle
+  const savedCollapsed = Boolean(ls.load(LS_KEYS.allPlayersCollapsed, false));
+  setAllPlayersCollapsed(savedCollapsed);
+  const toggleAllPlayers = () => {
+    const isCollapsed = allPlayersWrap.classList.contains("closed");
+    setAllPlayersCollapsed(!isCollapsed);
+    ls.save(LS_KEYS.allPlayersCollapsed, !isCollapsed);
+  };
+  allPlayersToggle.addEventListener("click", toggleAllPlayers);
+  allPlayersToggle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleAllPlayers(); }
+  });
 
   // Clock handlers + initial UI
   if (clockStartBtn && clockPauseBtn && clockResetBtn) {
